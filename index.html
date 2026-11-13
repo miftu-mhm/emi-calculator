@@ -1,90 +1,158 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>EMI ক্যালকুলেটর – ঋণের কিস্তি হিসাব</title>
+<meta name="theme-color" content="#101613">
+<meta name="description" content="Calculate monthly loan installments, total interest and repayment with Calcora.">
+<title>Calcora — EMI Calculator</title>
 <style>
-:root{--bg:#f6f8f7;--card:#fff;--text:#14211b;--muted:#5b6b63;--accent:#0f7a55;--line:#d9e2dd;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101613;--card:#18211c;--text:#e8f0ec;--muted:#9bb0a6;--accent:#3ecf9a;--line:#2a3830}}
-:root[data-theme="dark"]{--bg:#101613;--card:#18211c;--text:#e8f0ec;--muted:#9bb0a6;--accent:#3ecf9a;--line:#2a3830}
+:root{--bg:#f5f8f6;--card:#fff;--text:#17231d;--muted:#63736a;--accent:#087b55;--line:#dce5df;--soft:#edf4f0;--principal:#168b68;--interest:#e3a33b}
+:root[data-theme="dark"]{--bg:#101613;--card:#18211c;--text:#e8f0ec;--muted:#9bb0a6;--accent:#45d3a0;--line:#2a3830;--soft:#101915;--principal:#45d3a0;--interest:#f0b653}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101613;--card:#18211c;--text:#e8f0ec;--muted:#9bb0a6;--accent:#45d3a0;--line:#2a3830;--soft:#101915;--principal:#45d3a0;--interest:#f0b653}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,"Noto Sans Bengali",sans-serif;line-height:1.6}
-main{max-width:560px;margin:0 auto;padding:20px 16px 40px}
-h1{font-size:1.4rem;margin:0 0 4px}
-p.sub{color:var(--muted);margin:0 0 16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
-label{display:block;font-weight:600;margin:10px 0 4px}
-input,select{width:100%;padding:11px;font-size:1rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
-.row{display:flex;gap:8px}.row>*{flex:1}
-.res{text-align:center}
-.big{font-size:2rem;font-weight:700;color:var(--accent)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.grid div{background:var(--bg);border-radius:10px;padding:10px}
-.grid small{color:var(--muted);display:block}
-.scroll{overflow-x:auto;max-height:320px;overflow-y:auto}
-table{width:100%;border-collapse:collapse;font-size:.9rem}
-th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+main{max-width:620px;margin:0 auto;padding:18px 16px 42px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:42px;height:42px;border-radius:13px;background:var(--accent);color:#062b1d;display:grid;place-items:center;font-weight:900;font-size:1.15rem}
+.brandname{font-weight:800;letter-spacing:.2px;font-size:1.15rem;line-height:1.2}
+.tagline{font-size:.78rem;color:var(--muted)}
+.actions{display:flex;gap:7px}
+button{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--card);color:var(--text);font:inherit;font-weight:650;cursor:pointer}
+button.primary{background:var(--accent);color:#062b1d;border-color:var(--accent)}
+h1{font-size:1.5rem;line-height:1.3;margin:0 0 5px}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}
+label{display:block;font-weight:650;margin:12px 0 5px}
+input,select{width:100%;min-width:0;padding:12px;font-size:1rem;border:1px solid var(--line);border-radius:11px;background:var(--bg);color:var(--text)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.buttons{display:flex;gap:10px;margin-top:16px}.buttons button{flex:1}
+.result{text-align:center}.result-title{font-size:1.05rem}
+.big{font-size:2rem;font-weight:800;color:var(--accent);margin:4px 0 12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{background:var(--soft);border-radius:12px;padding:12px;min-width:0}
+.metric small{display:block;color:var(--muted)}.metric b{font-size:1.02rem;overflow-wrap:anywhere}
+h2{font-size:1.1rem;margin:0 0 12px}
+.breakdown{height:16px;display:flex;overflow:hidden;border-radius:99px;background:var(--soft);margin:12px 0}
+.principalbar{background:var(--principal);width:0}.interestbar{background:var(--interest);width:0}
+.legend{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.9rem}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.scroll{overflow:auto;max-height:340px}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
 th{position:sticky;top:0;background:var(--card)}
-h2{font-size:1.05rem;margin:0 0 8px}
-.note{color:var(--muted);font-size:.85rem}
+.note{color:var(--muted);font-size:.84rem;margin:0}
+.error{color:#d94b4b;font-size:.9rem;min-height:1.4em;margin-top:7px}
+footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:20px}
+@media(max-width:390px){header{align-items:flex-start}.actions{flex-direction:column}.big{font-size:1.7rem}}
 </style>
 </head>
 <body>
 <main>
-<h1>EMI ক্যালকুলেটর</h1>
-<p class="sub">ঋণের মাসিক কিস্তি, মোট সুদ ও পরিশোধের হিসাব</p>
+<header>
+  <div class="brand">
+    <div class="logo" aria-hidden="true">C</div>
+    <div><div class="brandname">Calcora</div><div class="tagline" data-i18n="tagline">See beyond the monthly</div></div>
+  </div>
+  <div class="actions">
+    <button id="langBtn" type="button">বাংলা</button>
+    <button id="themeBtn" type="button" aria-label="Toggle colour theme">☼ / ☾</button>
+  </div>
+</header>
 
-<div class="card">
-<label for="p">ঋণের পরিমাণ (টাকা)</label>
-<input id="p" type="number" inputmode="decimal" value="500000" min="0">
-<label for="r">বার্ষিক সুদের হার (%)</label>
-<input id="r" type="number" inputmode="decimal" value="12" min="0" step="0.1">
-<label for="t">মেয়াদ</label>
-<div class="row">
-<input id="t" type="number" inputmode="decimal" value="3" min="0" step="1">
-<select id="u"><option value="y">বছর</option><option value="m">মাস</option></select>
-</div>
-</div>
+<h1 data-i18n="title">EMI Calculator</h1>
+<p class="sub" data-i18n="subtitle">Estimate your monthly installment, interest and total repayment.</p>
 
-<div class="card res">
-<div>মাসিক কিস্তি (EMI)</div>
-<div class="big" id="emi">–</div>
-<div class="grid">
-<div><small>মোট সুদ</small><b id="int">–</b></div>
-<div><small>মোট পরিশোধ</small><b id="tot">–</b></div>
-</div>
-</div>
+<section class="card">
+  <label for="p" data-i18n="loan">Loan amount</label>
+  <div class="row">
+    <input id="p" type="text" inputmode="numeric" value="5,00,000" autocomplete="off">
+    <select id="currency" aria-label="Currency">
+      <option value="BDT">BDT (৳)</option><option value="USD">USD ($)</option>
+      <option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option>
+      <option value="INR">INR (₹)</option><option value="PKR">PKR (₨)</option>
+      <option value="AED">AED (د.إ)</option><option value="SAR">SAR (﷼)</option>
+    </select>
+  </div>
+  <label for="r" data-i18n="rate">Annual interest rate (%)</label>
+  <input id="r" type="number" inputmode="decimal" value="12" min="0" step="0.01">
+  <label for="t" data-i18n="tenure">Loan term</label>
+  <div class="row">
+    <input id="t" type="number" inputmode="numeric" value="3" min="1" step="1">
+    <select id="u" aria-label="Loan term unit"><option value="y" data-i18n="years">Years</option><option value="m" data-i18n="months">Months</option></select>
+  </div>
+  <div class="buttons">
+    <button class="primary" id="calcBtn" type="button" data-i18n="calculate">Calculate</button>
+    <button id="resetBtn" type="button" data-i18n="reset">Reset</button>
+  </div>
+  <div class="error" id="error" role="alert"></div>
+</section>
 
-<div class="card">
-<h2>কিস্তির তালিকা</h2>
-<div class="scroll"><table><thead><tr><th>মাস</th><th>কিস্তি</th><th>সুদ</th><th>আসল</th><th>বকেয়া</th></tr></thead><tbody id="rows"></tbody></table></div>
-</div>
+<section class="card result" aria-live="polite">
+  <div class="result-title" data-i18n="monthly">Monthly installment (EMI)</div>
+  <div class="big" id="emi">—</div>
+  <div class="grid">
+    <div class="metric"><small data-i18n="interest">Total interest</small><b id="int">—</b></div>
+    <div class="metric"><small data-i18n="total">Total repayment</small><b id="tot">—</b></div>
+  </div>
+</section>
 
-<p class="note">হিসাব হ্রাসমান স্থিতির (reducing balance) পদ্ধতিতে। ব্যাংকভেদে প্রসেসিং ফি ও নিয়ম আলাদা হতে পারে, তাই চূড়ান্ত অঙ্ক ব্যাংকের সঙ্গে মিলিয়ে নিন।</p>
+<section class="card">
+  <h2 data-i18n="breakdown">Principal vs. interest</h2>
+  <div class="breakdown" role="img" aria-label="Principal and interest breakdown">
+    <div class="principalbar" id="principalBar"></div><div class="interestbar" id="interestBar"></div>
+  </div>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--principal)"></i><span data-i18n="principal">Principal</span>: <b id="principalValue">—</b></span>
+    <span><i class="dot" style="background:var(--interest)"></i><span data-i18n="interest">Interest</span>: <b id="interestValue">—</b></span>
+  </div>
+</section>
+
+<section class="card">
+  <h2 data-i18n="schedule">Repayment schedule</h2>
+  <div class="scroll"><table><thead><tr>
+    <th data-i18n="month">Month</th><th data-i18n="installment">Installment</th>
+    <th data-i18n="interestCol">Interest</th><th data-i18n="principal">Principal</th>
+    <th data-i18n="balance">Balance</th>
+  </tr></thead><tbody id="rows"></tbody></table></div>
+</section>
+<p class="note" data-i18n="note">This estimate uses the reducing-balance method. Fees and lender terms may differ; confirm the final figures with your bank.</p>
+<footer>© <span id="year"></span> Calcora</footer>
 </main>
 <script>
 const $=id=>document.getElementById(id);
-const fmt=n=>"৳ "+Math.round(n).toLocaleString("en-IN");
+let lang="en";
+const currencies={BDT:{symbol:"৳",locale:"en-IN"},USD:{symbol:"$",locale:"en-US"},EUR:{symbol:"€",locale:"de-DE"},GBP:{symbol:"£",locale:"en-GB"},INR:{symbol:"₹",locale:"en-IN"},PKR:{symbol:"₨",locale:"en-PK"},AED:{symbol:"د.إ",locale:"en-AE"},SAR:{symbol:"﷼",locale:"en-SA"}};
+const words={
+en:{tagline:"See beyond the monthly",title:"EMI Calculator",subtitle:"Estimate your monthly installment, interest and total repayment.",loan:"Loan amount",rate:"Annual interest rate (%)",tenure:"Loan term",years:"Years",months:"Months",calculate:"Calculate",reset:"Reset",monthly:"Monthly installment (EMI)",interest:"Total interest",total:"Total repayment",breakdown:"Principal vs. interest",principal:"Principal",schedule:"Repayment schedule",month:"Month",installment:"Installment",interestCol:"Interest",balance:"Balance",note:"This estimate uses the reducing-balance method. Fees and lender terms may differ; confirm the final figures with your bank.",invalid:"Enter a valid loan amount, interest rate and loan term (up to 50 years)."},
+bn:{tagline:"মাসিক কিস্তির বাইরেও ভাবুন",title:"EMI ক্যালকুলেটর",subtitle:"মাসিক কিস্তি, সুদ ও মোট পরিশোধের হিসাব করুন।",loan:"ঋণের পরিমাণ",rate:"বার্ষিক সুদের হার (%)",tenure:"ঋণের মেয়াদ",years:"বছর",months:"মাস",calculate:"হিসাব করুন",reset:"রিসেট",monthly:"মাসিক কিস্তি (EMI)",interest:"মোট সুদ",total:"মোট পরিশোধ",breakdown:"আসল বনাম সুদ",principal:"আসল",schedule:"কিস্তির তালিকা",month:"মাস",installment:"কিস্তি",interestCol:"সুদ",balance:"বকেয়া",note:"এই হিসাব হ্রাসমান স্থিতির পদ্ধতিতে করা হয়েছে। ফি ও ব্যাংকের শর্ত ভিন্ন হতে পারে; চূড়ান্ত হিসাব ব্যাংকের সঙ্গে মিলিয়ে নিন।",invalid:"সঠিক ঋণের পরিমাণ, সুদের হার ও মেয়াদ দিন (সর্বোচ্চ ৫০ বছর)।"}
+};
+function setLanguage(next){lang=next;document.documentElement.lang=lang;document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=words[lang][el.dataset.i18n]);$("langBtn").textContent=lang==="en"?"বাংলা":"English";calc()}
+function amount(){return Number($("p").value.replace(/,/g,"").replace(/[^\d.]/g,""))}
+function money(n){const c=currencies[$("currency").value];return c.symbol+" "+Math.round(n).toLocaleString(c.locale)}
 function calc(){
-  const P=parseFloat($("p").value),R=parseFloat($("r").value),T=parseFloat($("t").value);
-  const n=Math.round($("u").value==="y"?T*12:T);
-  const tb=$("rows");tb.innerHTML="";
-  if(!(P>0)||!(n>0)||!(R>=0)){["emi","int","tot"].forEach(i=>$(i).textContent="–");return}
-  const i=R/1200;
-  const emi=i===0?P/n:P*i*Math.pow(1+i,n)/(Math.pow(1+i,n)-1);
-  $("emi").textContent=fmt(emi);
-  $("tot").textContent=fmt(emi*n);
-  $("int").textContent=fmt(emi*n-P);
-  let bal=P,html="";
-  for(let k=1;k<=n&&k<=600;k++){
-    const it=bal*i,pr=emi-it;bal=Math.max(0,bal-pr);
-    html+=`<tr><td>${k}</td><td>${Math.round(emi).toLocaleString("en-IN")}</td><td>${Math.round(it).toLocaleString("en-IN")}</td><td>${Math.round(pr).toLocaleString("en-IN")}</td><td>${Math.round(bal).toLocaleString("en-IN")}</td></tr>`;
-  }
-  tb.innerHTML=html;
+ const P=amount(),R=Number($("r").value),T=Number($("t").value),n=Math.round($("u").value==="y"?T*12:T);
+ const tb=$("rows");tb.innerHTML="";$("error").textContent="";
+ if(!Number.isFinite(P)||P<=0||!Number.isFinite(R)||R<0||!Number.isFinite(T)||T<=0||n>600){
+  $("emi").textContent=$("int").textContent=$("tot").textContent=$("principalValue").textContent=$("interestValue").textContent="—";
+  $("principalBar").style.width=$("interestBar").style.width="0%";$("error").textContent=words[lang].invalid;return;
+ }
+ const i=R/1200,emi=i===0?P/n:P*i*Math.pow(1+i,n)/(Math.pow(1+i,n)-1),total=emi*n,totalInterest=total-P;
+ $("emi").textContent=money(emi);$("tot").textContent=money(total);$("int").textContent=money(totalInterest);
+ $("principalValue").textContent=money(P);$("interestValue").textContent=money(totalInterest);
+ $("principalBar").style.width=(P/total*100)+"%";$("interestBar").style.width=(totalInterest/total*100)+"%";
+ let bal=P,html="";
+ for(let k=1;k<=n;k++){const interest=bal*i,principal=Math.min(bal,emi-interest);bal=Math.max(0,bal-principal);const f=x=>Math.round(x).toLocaleString(currencies[$("currency").value].locale);html+=`<tr><td>${k}</td><td>${f(emi)}</td><td>${f(interest)}</td><td>${f(principal)}</td><td>${f(bal)}</td></tr>`}
+ tb.innerHTML=html;
 }
-["p","r","t","u"].forEach(id=>$(id).addEventListener("input",calc));
-calc();
+$("p").addEventListener("blur",()=>{const v=amount();if(Number.isFinite(v)&&v>0)$("p").value=Math.round(v).toLocaleString("en-IN")});
+$("calcBtn").addEventListener("click",calc);
+$("resetBtn").addEventListener("click",()=>{$("p").value="5,00,000";$("r").value=12;$("t").value=3;$("u").value="y";$("currency").value="BDT";calc()});
+$("langBtn").addEventListener("click",()=>setLanguage(lang==="en"?"bn":"en"));
+$("themeBtn").addEventListener("click",()=>{const root=document.documentElement;root.dataset.theme=root.dataset.theme==="dark"?"light":"dark"});
+["p","r","t","u","currency"].forEach(id=>$(id).addEventListener("input",calc));
+$("year").textContent=new Date().getFullYear();setLanguage("en");
 </script>
 </body>
 </html>
