@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EMI ক্যালকুলেটর – ঋণের কিস্তি হিসাব</title>
+<style>
+:root{--bg:#f6f8f7;--card:#fff;--text:#14211b;--muted:#5b6b63;--accent:#0f7a55;--line:#d9e2dd;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101613;--card:#18211c;--text:#e8f0ec;--muted:#9bb0a6;--accent:#3ecf9a;--line:#2a3830}}
+:root[data-theme="dark"]{--bg:#101613;--card:#18211c;--text:#e8f0ec;--muted:#9bb0a6;--accent:#3ecf9a;--line:#2a3830}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,"Noto Sans Bengali",sans-serif;line-height:1.6}
+main{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.4rem;margin:0 0 4px}
+p.sub{color:var(--muted);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+label{display:block;font-weight:600;margin:10px 0 4px}
+input,select{width:100%;padding:11px;font-size:1rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.res{text-align:center}
+.big{font-size:2rem;font-weight:700;color:var(--accent)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.grid div{background:var(--bg);border-radius:10px;padding:10px}
+.grid small{color:var(--muted);display:block}
+.scroll{overflow-x:auto;max-height:320px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--card)}
+h2{font-size:1.05rem;margin:0 0 8px}
+.note{color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<main>
+<h1>EMI ক্যালকুলেটর</h1>
+<p class="sub">ঋণের মাসিক কিস্তি, মোট সুদ ও পরিশোধের হিসাব</p>
+
+<div class="card">
+<label for="p">ঋণের পরিমাণ (টাকা)</label>
+<input id="p" type="number" inputmode="decimal" value="500000" min="0">
+<label for="r">বার্ষিক সুদের হার (%)</label>
+<input id="r" type="number" inputmode="decimal" value="12" min="0" step="0.1">
+<label for="t">মেয়াদ</label>
+<div class="row">
+<input id="t" type="number" inputmode="decimal" value="3" min="0" step="1">
+<select id="u"><option value="y">বছর</option><option value="m">মাস</option></select>
+</div>
+</div>
+
+<div class="card res">
+<div>মাসিক কিস্তি (EMI)</div>
+<div class="big" id="emi">–</div>
+<div class="grid">
+<div><small>মোট সুদ</small><b id="int">–</b></div>
+<div><small>মোট পরিশোধ</small><b id="tot">–</b></div>
+</div>
+</div>
+
+<div class="card">
+<h2>কিস্তির তালিকা</h2>
+<div class="scroll"><table><thead><tr><th>মাস</th><th>কিস্তি</th><th>সুদ</th><th>আসল</th><th>বকেয়া</th></tr></thead><tbody id="rows"></tbody></table></div>
+</div>
+
+<p class="note">হিসাব হ্রাসমান স্থিতির (reducing balance) পদ্ধতিতে। ব্যাংকভেদে প্রসেসিং ফি ও নিয়ম আলাদা হতে পারে, তাই চূড়ান্ত অঙ্ক ব্যাংকের সঙ্গে মিলিয়ে নিন।</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>"৳ "+Math.round(n).toLocaleString("en-IN");
+function calc(){
+  const P=parseFloat($("p").value),R=parseFloat($("r").value),T=parseFloat($("t").value);
+  const n=Math.round($("u").value==="y"?T*12:T);
+  const tb=$("rows");tb.innerHTML="";
+  if(!(P>0)||!(n>0)||!(R>=0)){["emi","int","tot"].forEach(i=>$(i).textContent="–");return}
+  const i=R/1200;
+  const emi=i===0?P/n:P*i*Math.pow(1+i,n)/(Math.pow(1+i,n)-1);
+  $("emi").textContent=fmt(emi);
+  $("tot").textContent=fmt(emi*n);
+  $("int").textContent=fmt(emi*n-P);
+  let bal=P,html="";
+  for(let k=1;k<=n&&k<=600;k++){
+    const it=bal*i,pr=emi-it;bal=Math.max(0,bal-pr);
+    html+=`<tr><td>${k}</td><td>${Math.round(emi).toLocaleString("en-IN")}</td><td>${Math.round(it).toLocaleString("en-IN")}</td><td>${Math.round(pr).toLocaleString("en-IN")}</td><td>${Math.round(bal).toLocaleString("en-IN")}</td></tr>`;
+  }
+  tb.innerHTML=html;
+}
+["p","r","t","u"].forEach(id=>$(id).addEventListener("input",calc));
+calc();
+</script>
+</body>
+</html>
