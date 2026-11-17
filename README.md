@@ -1,2 +1,2 @@
 # emi-calculator
-A handy EMI calculator for working out monthly loan payments, interest, and the total amount to be paid in Bangladeshi Taka (BDT).
+Explore your monthly payments, total interest, and complete repayment breakdown—all in one place.
